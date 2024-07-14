@@ -22,6 +22,7 @@ _PACKET_HEADER = b'\x55\x55'
 _1_SIGNED_CHAR_STRUCT = struct.Struct('<b')
 _1_SIGNED_SHORT_STRUCT = struct.Struct('>h')
 _1_UNSIGNED_CHAR_1_UNSIGNED_SHORT_STRUCT = struct.Struct('<bxh')
+_1_SIGNED_SHORT_1_SIGNED_CHAR_STRUCT = struct.Struct('>hxb')
 _2_UNSIGNED_SHORTS_STRUCT = struct.Struct('<HH')
 
 # Servo command numbers
@@ -849,17 +850,17 @@ class ServoBus:
         response = self._send_and_receive_packet(servo_id,
                                                  _SERVO_OR_MOTOR_MODE_READ)
 
-        mode, speed = _1_UNSIGNED_CHAR_1_UNSIGNED_SHORT_STRUCT.unpack(
+        speed, mode = _1_SIGNED_SHORT_1_SIGNED_CHAR_STRUCT.unpack(
             response.parameters)
 
-        if mode == 0:
+        if speed == 0:
             mode = 'servo'
             speed = None
-        elif mode == 1:
+        elif speed > 1:
             mode = 'motor'
             speed = int(speed)
         else:
-            raise ValueError(f'Received unknown mode: {mode}')
+            raise ValueError(f'Received unknown mode: {speed}')
 
         return mode, speed
 
