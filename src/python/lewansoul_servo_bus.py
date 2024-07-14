@@ -20,7 +20,7 @@ MAX_ANGLE_DEGREES = 240
 # Packet stuff
 _PACKET_HEADER = b'\x55\x55'
 _1_SIGNED_CHAR_STRUCT = struct.Struct('<b')
-_1_SIGNED_SHORT_STRUCT = struct.Struct('<h')
+_1_SIGNED_SHORT_STRUCT = struct.Struct('>h')
 _1_UNSIGNED_CHAR_1_UNSIGNED_SHORT_STRUCT = struct.Struct('<bxh')
 _2_UNSIGNED_SHORTS_STRUCT = struct.Struct('<HH')
 
