@@ -1,6 +1,10 @@
-# lewansoul-servo-bus
+# HiWonder-servo-bus
 
-This is a Python 3 library implementing the [LewanSoul Servo Bus Communication Protocol](https://images-na.ssl-images-amazon.com/images/I/71WyZDfQwkL.pdf),
+This library is meant to be used for controlling servos with the Buslinker debugging board. 
+
+Note: This has only been tested on the [HTD-45H](https://www.hiwonder.com/collections/bus-servo/products/htd-45h) using the [Buslinker V2.5 debugging board](https://www.hiwonder.com/products/hiwonder-ttl-usb-debugging-board). Servo responses with this setup are different than HiWonder's documented protocol, hence this repo. 
+
+Python 3 library implementing the [LewanSoul Servo Bus Communication Protocol](https://images-na.ssl-images-amazon.com/images/I/71WyZDfQwkL.pdf),
 which is used by the following products:
 
 - [Hiwonder bus servos](https://www.hiwonder.hk/collections/bus-servo)
@@ -9,6 +13,8 @@ which is used by the following products:
 
 This library supports all the commands necessary to control the servo positions, as well as commands to set parameters
 and read servo states such as position, temperature, and supply voltage.
+
+
 
 
 ### Quick Example
