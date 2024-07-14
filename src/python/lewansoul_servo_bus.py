@@ -54,6 +54,16 @@ _SERVO_LED_CTRL_READ = 34
 _SERVO_LED_ERROR_WRITE = 35
 _SERVO_LED_ERROR_READ = 36
 
+# Servo command parameters 
+read_command_number_of_parameters = {
+    # _SERVO_ID_READ: 1,    # Returns Garbage, doesn't provide a unique value. servo 112 and servo 240 give the same response for example, b'\r' 
+    _SERVO_VIN_READ: 2,
+    _SERVO_POS_READ: 2,
+    _SERVO_OR_MOTOR_MODE_READ: 4,
+}
+
+
+
 # Custom types
 Real = Union[float, int]
 
@@ -331,17 +341,11 @@ class ServoBus:
 
         return _ServoPacket(servo_id, command, parameters)
     
-    def _receive_voltage_packet(self, servo_id: int) -> _ServoPacket:
-        # with self._serial_conn_lock:
-        #     parameters = self.serial_conn.read(2)
-        #     higher_byte = parameters[0]
-        #     lower_byte = parameters[1] if len(parameters) > 1 else 0
-        #     battery_voltage = 0xffff & (lower_byte | (0xff00 & (higher_byte << 8))) 
-        #     battery_voltage /= 1000
-        #     return battery_voltage
+    def _receive_read_packet(self, command: int, servo_id: int) -> _ServoPacket:
         with self._serial_conn_lock:
-            parameters = self.serial_conn.read(2)
-        return _ServoPacket(servo_id, _SERVO_VIN_READ, parameters)
+            num_parameters = read_command_number_of_parameters[command]
+            parameters = self.serial_conn.read(num_parameters)
+        return _ServoPacket(servo_id, command, parameters)
 
     def _send_and_receive_packet(
             self, servo_id: int,
@@ -350,8 +354,8 @@ class ServoBus:
     ) -> _ServoPacket:
         with self._serial_conn_lock:
             self._send_packet(servo_id, command, parameters=parameters)
-            if command == _SERVO_VIN_READ:
-                response = self._receive_voltage_packet(servo_id)
+            if command in read_command_number_of_parameters:
+                response = self._receive_read_packet(command, servo_id)
             else:
                 response = self._receive_packet()
 
@@ -557,6 +561,17 @@ class ServoBus:
 
         if new_id != old_id:
             self._send_packet(old_id, _SERVO_ID_WRITE, bytes((new_id,)))
+
+    def id_read(self, servo_id: int) -> int:
+        response = self._send_and_receive_packet(servo_id,
+                                                 _SERVO_ID_READ)
+
+        # servo_id_response = _1_SIGNED_SHORT_STRUCT.unpack(
+        #     response.parameters)
+        servo_id_response = response.parameters
+
+        return servo_id_response
+
 
     def angle_offset_adjust(self, servo_id: int, offset_degrees: Real,
                             write: bool = True) -> None:
