@@ -330,6 +330,18 @@ class ServoBus:
                 )
 
         return _ServoPacket(servo_id, command, parameters)
+    
+    def _receive_voltage_packet(self, servo_id: int) -> _ServoPacket:
+        # with self._serial_conn_lock:
+        #     parameters = self.serial_conn.read(2)
+        #     higher_byte = parameters[0]
+        #     lower_byte = parameters[1] if len(parameters) > 1 else 0
+        #     battery_voltage = 0xffff & (lower_byte | (0xff00 & (higher_byte << 8))) 
+        #     battery_voltage /= 1000
+        #     return battery_voltage
+        with self._serial_conn_lock:
+            parameters = self.serial_conn.read(2)
+        return _ServoPacket(servo_id, _SERVO_VIN_READ, parameters)
 
     def _send_and_receive_packet(
             self, servo_id: int,
@@ -338,21 +350,24 @@ class ServoBus:
     ) -> _ServoPacket:
         with self._serial_conn_lock:
             self._send_packet(servo_id, command, parameters=parameters)
-            response = self._receive_packet()
+            if command == _SERVO_VIN_READ:
+                response = self._receive_voltage_packet(servo_id)
+            else:
+                response = self._receive_packet()
 
-        # Make sure received packet servo ID matches
-        if response.servo_id != servo_id:
-            raise ServoBusError(
-                f'Received packet servo ID ({response.servo_id}) does not '
-                f'match sent packet servo ID ({servo_id}).'
-            )
+                # Make sure received packet servo ID matches
+                if response.servo_id != servo_id:
+                    raise ServoBusError(
+                        f'Received packet servo ID ({response.servo_id}) does not '
+                        f'match sent packet servo ID ({servo_id}).'
+                    )
 
-        # Make sure received packet command matches
-        if response.command != command:
-            raise ServoBusError(
-                f'Received packet command ({response.command}) does not '
-                f'match sent packet command ({command}).'
-            )
+                # Make sure received packet command matches
+                if response.command != command:
+                    raise ServoBusError(
+                        f'Received packet command ({response.command}) does not '
+                        f'match sent packet command ({command}).'
+                    )
 
         return response
 
