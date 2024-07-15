@@ -796,15 +796,32 @@ class ServoBus:
         vin_mv = _1_SIGNED_SHORT_STRUCT.unpack(response.parameters)[0]
 
         return vin_mv / 1000
+    
+    def _interpret_real_pos_byte_string(self, given_byte_string: bytes) -> bytes:
+        """Unpack the pos byte string to get the real tick byte string."""
+        def _interpret_lower_byte(given_lower_byte: int):
+            """Convert the given lower byte to a real lower byte."""
+            max_lower_byte = 0xDD - given_upper_byte
+            real_lower_byte = 0xFF & (max_lower_byte - given_lower_byte)
+            return real_lower_byte
+        
+        given_lower_byte = given_byte_string[1]
+        given_upper_byte = given_byte_string[0]
+        real_lower_byte = _interpret_lower_byte(given_lower_byte)
+        real_value_in_bytes = bytes([given_upper_byte, real_lower_byte])
+        return real_value_in_bytes
+        
 
     def pos_read(self, servo_id: int) -> float:
         """Gets the servo angle, in degrees. May be negative."""
 
         response = self._send_and_receive_packet(servo_id, _SERVO_POS_READ)
 
-        angle = _1_SIGNED_SHORT_STRUCT.unpack(response.parameters)[0]
+        real_byte_string = self._interpret_real_pos_byte_string(response.parameters)
+        angle_tick = _1_SIGNED_SHORT_STRUCT.unpack(real_byte_string)[0]
 
-        return _ticks_to_degrees(angle)
+        return angle_tick
+        # return _ticks_to_degrees(angle)
 
     def mode_write(self, servo_id: int, mode: Literal['motor', 'servo'],
                    speed: Real = None) -> None:
