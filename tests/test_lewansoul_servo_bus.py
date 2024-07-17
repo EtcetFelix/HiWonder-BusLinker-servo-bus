@@ -1,7 +1,7 @@
 import unittest
 from typing import Optional, Union
 
-import lewansoul_servo_bus
+import src.python.lewansoul_servo_bus
 
 
 class ServoTest(unittest.TestCase):
