@@ -1,6 +1,6 @@
 from typing import Optional, Tuple
 
-from lewansoul_servo_bus import BROADCAST_ID, truncate_angle, Servo, ServoBusCommunication
+from hiwonderbuslinker.lewansoul_servo_bus import BROADCAST_ID, truncate_angle, Servo, ServoBusCommunication
 
 # xArm servo IDs
 XARM_GRIPPER_ID = 1
