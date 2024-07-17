@@ -1,12 +1,12 @@
 import unittest
 from typing import Optional, Union
 
-import src.python.lewansoul_servo_bus
+from hiwonderbuslinker import lewansoul_servo_bus
 
 
 class ServoTest(unittest.TestCase):
     ID = 123
-    SERVO_BUS = lewansoul_servo_bus.ServoBus()
+    SERVO_BUS = lewansoul_servo_bus.ServoBusCommunication()
     NAME = 'claw'
 
     def setUp(self) -> None:
@@ -40,16 +40,16 @@ class ServoBusTest(unittest.TestCase):
     def setup_servo_bus(self, serial_conn_read_data: bytes) -> None:
         """
         Creates a MockSerial object with the given read_data, and sets
-        `self.servo_bus` to a new ServoBus instance using the MockSerial
+        `self.servo_bus` to a new ServoBusCommunication instance using the MockSerial
         instance as the servo_conn.
         """
 
         serial_conn = MockSerial(serial_conn_read_data)
-        self.servo_bus = lewansoul_servo_bus.ServoBus(
+        self.servo_bus = lewansoul_servo_bus.ServoBusCommunication(
             serial_conn=serial_conn, discard_echo=False)
 
     def test_get_servo(self):
-        servo_bus = lewansoul_servo_bus.ServoBus()
+        servo_bus = lewansoul_servo_bus.ServoBusCommunication()
         name = 'gripper'
 
         servo = servo_bus.get_servo(self.SERVO_ID, name=name)
