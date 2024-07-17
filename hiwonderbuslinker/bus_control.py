@@ -23,20 +23,23 @@ class ServoBus:
         self.servo_ids = pre_existing_servo_ids
         self.port = port
 
+# TODO: create a connection for the servo bus, handle connection and teardown gracefully
 
-    def get_bus_position(self) -> List[ServoPosition]:
+
+    def get_bus_position(self, servo_bus: ServoBusCommunication) -> List[ServoPosition]:
         """Return the list of the servo positions."""
+        # with ServoBusCommunication(port=self.port, on_enter_power_on=True) as servo_bus:
         positions = []
-        with ServoBusCommunication(port=self.port, on_enter_power_on=True) as servo_bus:
-            for servo in self.servo_ids:
-                positions.append(servo_bus.pos_read(servo))
+        for servo in self.servo_ids:
+            servo_pos = servo_bus.pos_read(servo)
+            positions.append(servo_pos)
         return positions
     
-    def set_bus_position(self, positions: List[ServoPosition]) -> None:
+
+    def set_bus_position(self, positions: List[ServoPosition], servo_bus: ServoBusCommunication) -> None:
         """Set the position for all the servos in the bus."""
-        with ServoBusCommunication(port=self.port, on_enter_power_on=True) as servo_bus:
-            for servo in self.servo_ids:
-                servo_bus.move_time_write(servo, positions[servo])
+        for servo in self.servo_ids:
+            servo_bus.move_time_write(servo, positions[servo])
 
     
 
