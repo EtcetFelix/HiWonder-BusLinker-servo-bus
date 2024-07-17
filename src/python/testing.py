@@ -1,7 +1,6 @@
 from lewansoul_servo_bus import ServoBusCommunication
 import struct
-
-_READ_1_SIGNED_SHORT_STRUCT = struct.Struct('>h')
+import time
 
 def binary_format(data):
     binary_representation = " ".join(bin(byte)[2:].zfill(8) for byte in data)
@@ -27,34 +26,37 @@ def reversed_byte(data):
     bytes_obj = binary_string_to_bytes(reversed_data)
     return bytes_obj
 
+def testing_pos(servo_bus: ServoBusCommunication):
+        angle_tick = servo_bus.pos_read(1)
+        print(f"tick: {angle_tick}")
 
-with ServoBus(port='COM5', baudrate=115200, timeout=1, on_enter_power_on=True) as servo_bus:
+def get_pos_for_seconds(servo_bus, num_seconds: int):
+    t_end = time.time() + num_seconds
+    while time.time() < t_end:     
+        testing_pos(servo_bus)
+        time.sleep(num_seconds/5)
+
+def test_move_servo_motor_for_seconds(servo_bus: ServoBusCommunication, num_seconds: int):
+    servo_bus.mode_write(1, 'motor', 20)
+    get_pos_for_seconds(servo_bus, num_seconds)
+    servo_bus.mode_write(1, 'servo')
+
+
+with ServoBusCommunication(port='COM5', baudrate=115200, timeout=1, on_enter_power_on=True) as servo_bus:
     # print(servo_bus.id_read(254))
     print(servo_bus.vin_read(1))
-    # print(servo_bus.temp_max_limit_read(2, 'C'))
-    # servo_bus.move_time_write(1, 0, 70)
-    # servo_bus.mode_write(1, 'motor', -50)
-    # servo_bus.mode_write(1, 'servo')
-    # servo_bus.move_start(1)
-    # print(servo_bus.mode_read(1))
-    # print(servo_bus.id_read(2))
-    # print(servo_bus.temp_read(2, units='F'))
-    # servo_bus.id_write(1, 2)
-    def testing_pos():
-        response_bytes, angle_tick = servo_bus.pos_read(1)
-        print(f"raw response: {response_bytes}, binary: {binary_format(response_bytes)}, tick: {angle_tick}")
-
-    while True:     
-        testing_pos()
-        # print(servo_bus.pos_read(1))
+    print(servo_bus.pos_read(1))
+    print(servo_bus.mode_read(1))
     # while True:
     #     print(servo_bus.pos_read(1))
-    # print(servo_bus.is_powered(1))
 
+    test_move_servo_motor_for_seconds(servo_bus, .2)
+    time.sleep(0.1)
+    print("sending servo move commands...")
+    for x in range(1):
+        servo_bus.move_time_write(servo_id=1, tick=150, time_s=.1, wait=False)
+        print(f"command number {x+1} sent")
+    
+    
+    
 
-    # new_id=1
-    # old_id=5
-    # servo_bus.id_write(old_id, new_id)
-    # response_id = servo_bus.id_read(254)
-    # print(response_id)
-    # print(f"id {new_id} response: {response_id}, as int: {response_id[0]}")
