@@ -78,7 +78,7 @@ class _ServoPacket(NamedTuple):
 class Servo:
     """Represents a specific servo on a servo bus."""
 
-    def __init__(self, id_: int, bus: 'ServoBus', name: str = None) -> None:
+    def __init__(self, id_: int, bus: 'ServoBusCommunication', name: str = None) -> None:
         """
         This is not meant to be instantiated directly. Use
         `ServoBus.get_servo(...)` instead.
@@ -181,7 +181,7 @@ class Servo:
         return self.bus.led_error_read(self.id)
 
 
-class ServoBus:
+class ServoBusCommunication:
     """
     Controls bus servos using the LewanSoul Bus Servo Communication Protocol.
 

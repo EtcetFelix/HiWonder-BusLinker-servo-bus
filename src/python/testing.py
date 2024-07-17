@@ -1,4 +1,4 @@
-from lewansoul_servo_bus import ServoBus
+from lewansoul_servo_bus import ServoBusCommunication
 import struct
 
 _READ_1_SIGNED_SHORT_STRUCT = struct.Struct('>h')

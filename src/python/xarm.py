@@ -1,6 +1,6 @@
 from typing import Optional, Tuple
 
-from lewansoul_servo_bus import BROADCAST_ID, truncate_angle, Servo, ServoBus
+from lewansoul_servo_bus import BROADCAST_ID, truncate_angle, Servo, ServoBusCommunication
 
 # xArm servo IDs
 XARM_GRIPPER_ID = 1
@@ -14,7 +14,7 @@ XARM_BASE_ID = 6
 class Xarm:
     def __init__(
             self,
-            servo_bus: ServoBus,
+            servo_bus: ServoBusCommunication,
             name: Optional[str] = None,
             gripper_id: int = XARM_GRIPPER_ID,
             wrist_id: int = XARM_WRIST_ID,
@@ -52,7 +52,7 @@ class Xarm:
         return self._servos
 
 
-def control(servo_bus: ServoBus):
+def control(servo_bus: ServoBusCommunication):
     print('Enter commands in the format (ID, angle [deg], time [s]):')
 
     servo_bus.set_powered(BROADCAST_ID, True)
@@ -200,7 +200,7 @@ def main() -> None:
 
     # Connect to the servo bus
     print()
-    with ServoBus(serial_port_regexp=serial_port) as servo_bus:
+    with ServoBusCommunication(serial_port_regexp=serial_port) as servo_bus:
         # Get an instance of an arm
         arm = Xarm(servo_bus)
 
