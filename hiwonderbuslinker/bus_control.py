@@ -2,8 +2,9 @@ from hiwonderbuslinker.lewansoul_servo_bus import ServoBusCommunication
 from typing import List
 
 class ServoPosition:
-    servo_id: int
-    position: int
+    def __init__(self, servo_id: int, position: int):
+        self.servo_id = servo_id
+        self.position = position
 
 class ServoBus:
     """Class to control an entire servo bus at once."""
