@@ -31,7 +31,12 @@ class ServoBus:
             for servo in self.servo_ids:
                 positions.append(servo_bus.pos_read(servo))
         return positions
-
+    
+    def set_bus_position(self, positions: List[ServoPosition]) -> None:
+        """Set the position for all the servos in the bus."""
+        with ServoBusCommunication(port=self.port, on_enter_power_on=True) as servo_bus:
+            for servo in self.servo_ids:
+                servo_bus.move_time_write(servo, positions[servo])
 
     
 
