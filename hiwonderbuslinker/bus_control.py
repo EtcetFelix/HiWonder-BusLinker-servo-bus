@@ -1,4 +1,4 @@
-from lewansoul_servo_bus import ServoBusCommunication
+from hiwonderbuslinker.lewansoul_servo_bus import ServoBusCommunication
 from typing import List
 
 class ServoPosition:

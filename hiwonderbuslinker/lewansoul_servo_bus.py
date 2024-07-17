@@ -379,8 +379,10 @@ class ServoBusCommunication:
     def get_servo(self, servo_id: int, name: str = None) -> Servo:
         return Servo(servo_id, self, name=name)
 
-    def _move_time_write(self, servo_id: int, angle_degrees: Real, time_s: Real,
-                         command: int, wait: bool) -> None:
+    # def _move_time_write(self, servo_id: int, angle_degrees: Real, time_s: Real,
+    #                      command: int, wait: bool) -> None:
+    def _move_time_write(self, servo_id: int, tick: int, time_s: Real,
+                          command: int, wait: bool) -> None:
         """
         :param servo_id:
         :param angle_degrees: Should be in the range [0, 240] degrees; will be
@@ -399,19 +401,22 @@ class ServoBusCommunication:
                 f'{_SERVO_MOVE_TIME_WAIT_WRITE}; got {command}.'
             )
 
-        angle_degrees = truncate_angle(angle_degrees)
-        angle = _degrees_to_ticks(angle_degrees)
+        # angle_degrees = truncate_angle(angle_degrees)
+        # angle = _degrees_to_ticks(angle_degrees)
 
         time_s = min(max(0, time_s), 30)
         time_ms = int(round(time_s * 1000))
 
-        params = _2_UNSIGNED_SHORTS_STRUCT.pack(angle, time_ms)
+        # params = _2_UNSIGNED_SHORTS_STRUCT.pack(angle, time_ms)
+        params = _2_UNSIGNED_SHORTS_STRUCT.pack(tick, time_ms)
         self._send_packet(servo_id, command, params)
 
         if wait:
             time.sleep(time_s)
 
-    def move_time_write(self, servo_id: int, angle_degrees: Real, time_s: Real,
+    # def move_time_write(self, servo_id: int, angle_degrees: Real, time_s: Real,
+    #                     wait: bool = False) -> None:
+    def move_time_write(self, servo_id: int, tick: int, time_s: Real,
                         wait: bool = False) -> None:
         """
         Tells the servo to start moving to the specified angle within the
@@ -426,8 +431,10 @@ class ServoBusCommunication:
             command.
         """
 
-        return self._move_time_write(servo_id, angle_degrees, time_s,
-                                     _SERVO_MOVE_TIME_WRITE, wait)
+        # return self._move_time_write(servo_id, angle_degrees, time_s,
+        #                              _SERVO_MOVE_TIME_WRITE, wait)
+        return self._move_time_write(servo_id, tick, time_s,
+                                      _SERVO_MOVE_TIME_WRITE, wait)
 
     def move_time_wait_write(self, servo_id: int, angle_degrees: Real,
                              time_s: Real) -> None:
