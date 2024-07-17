@@ -1,4 +1,4 @@
-from lewansoul_servo_bus import ServoBusCommunication
+from src.python.lewansoul_servo_bus import ServoBusCommunication
 import struct
 import time
 
