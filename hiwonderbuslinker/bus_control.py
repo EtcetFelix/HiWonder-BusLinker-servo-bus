@@ -26,8 +26,13 @@ class ServoBus:
 # TODO: create a connection for the servo bus, handle connection and teardown gracefully
 
 
-    def get_bus_position(self, servo_bus: ServoBusCommunication) -> Dict[int, ServoPosition]:
-        """Return the list of the servo positions."""
+    def get_bus_position(self, servo_bus: ServoBusCommunication) -> Dict[int, int]:
+        """
+        Return the list of the servo positions.
+
+        :return: A dictionary containing user information. keys are servo_id, values are position.
+        :rtype: dict
+        """
         positions = {}
         for servo in self.servo_ids:
             servo_pos = servo_bus.pos_read(servo)
