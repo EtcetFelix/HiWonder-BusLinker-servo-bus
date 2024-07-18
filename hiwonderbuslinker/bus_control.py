@@ -40,7 +40,7 @@ class ServoBus:
         return positions
     
 
-    def set_bus_position(self, positions: List[ServoPosition], servo_bus: ServoBusCommunication) -> None:
+    def set_bus_position(self, positions: List[ServoPosition], servo_bus: ServoBusCommunication, time_s: int) -> None:
         """Set the position for all the servos in the bus."""
         for desired_position in positions:
-            servo_bus.pos_set(desired_position.servo_id, desired_position.position)
+            servo_bus.pos_set(desired_position.servo_id, desired_position.position, time_s)
