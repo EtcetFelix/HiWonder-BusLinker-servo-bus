@@ -21,3 +21,7 @@ def test_get_vin():
         assert servo_bus.vin_read(SERVO_ID) > 0
         logger.info(f"Servo VIN: {servo_bus.vin_read(SERVO_ID)}")
 
+def test_set_pos():
+    with ServoBusCommunication(port=PORT, baudrate=BAUDRATE, timeout=TIMEOUT, on_enter_power_on=True) as servo_bus:
+        servo_bus.pos_set(servo_id=SERVO_ID, tick=200, time_s=.1, wait=False)
+
