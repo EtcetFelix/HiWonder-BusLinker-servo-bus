@@ -36,7 +36,7 @@ class ServoBus:
         positions = {}
         for servo in self.servo_ids:
             servo_pos = servo_bus.pos_read(servo)
-            positions[servo] =ServoPosition(servo, servo_pos)
+            positions[servo] = servo_pos
         return positions
     
 

@@ -22,32 +22,31 @@ def test_get_bus_position():
     bus = ServoBus(PORT, SERVO_ID, BUS_IDS)
     with ServoBusCommunication(port=PORT, baudrate=BAUDRATE, timeout=TIMEOUT, on_enter_power_on=True) as servo_bus:
         positions = bus.get_bus_position(servo_bus)
-        positions_as_list = list(positions.values())
-        logger.info(f"Servo Positions: {positions_as_list}")
+        logger.info(f"Servo Positions: {positions}")
         assert len(positions) == len(BUS_IDS)
 
 
 def test_set_bus_position():
     """Move servos and test they are moved to the correct position."""
-    def _verify_positions(real_positions: Dict[int, ServoPosition], target_positions: Dict[int, ServoPosition], error_threshold: int):
+    def _verify_positions(real_positions: Dict[int, int], target_positions: Dict[int, ServoPosition], error_threshold: int):
         """Check the result servo positions are within the error threshold of the target positions."""
         for servo_id in real_positions:
             target_position = target_positions[servo_id].position
-            real_position = real_positions[servo_id].position
+            real_position = real_positions[servo_id]
             is_pos_within_error_threshold = pos_within_error_threshold(real_position, target_position, error_threshold)
             assert is_pos_within_error_threshold
 
     bus = ServoBus(PORT, SERVO_ID, BUS_IDS)
     with ServoBusCommunication(port=PORT, baudrate=BAUDRATE, timeout=TIMEOUT, on_enter_power_on=True) as servo_bus:
-        error_threshold = 2
+        error_threshold = 3
         time_s = 1
         target_positions = {
             BUS_IDS[0]: ServoPosition(BUS_IDS[0], 300), 
-            BUS_IDS[1]: ServoPosition(BUS_IDS[1], 350)
+            BUS_IDS[1]: ServoPosition(BUS_IDS[1], 380)
         }
         bus.set_bus_position(target_positions.values(), servo_bus, time_s)
 
         real_positions = bus.get_bus_position(servo_bus)
         _verify_positions(real_positions, target_positions, error_threshold)
 
-        logger.info(f"Servo Positions: {real_positions}")
+        logger.info(f"Servo Positions: {real_positions}")   

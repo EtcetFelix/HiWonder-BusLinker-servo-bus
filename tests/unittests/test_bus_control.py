@@ -16,14 +16,14 @@ def test_servo_position_instantiation():
     assert position.servo_id == 1
     assert position.position == 10
 
-def test_get_bus_position_returns_position_object(bus, mocker):
+def test_get_bus_position_returns_dictionary_object(bus, mocker):
     mock_servo_bus = mocker.Mock()
     mock_servo_bus.pos_read.return_value = 200
 
     positions = bus.get_bus_position(mock_servo_bus)
     assert isinstance(positions, dict)
     for servo_id in positions:
-        assert isinstance(positions[servo_id], ServoPosition)
+        assert isinstance(positions[servo_id], int)
 
 
 def test_get_bus_position_returns_correct_length_of_position_objects(bus, mocker):
