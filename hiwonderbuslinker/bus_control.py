@@ -1,5 +1,5 @@
 from hiwonderbuslinker.lewansoul_servo_bus import ServoBusCommunication
-from typing import List
+from typing import List, Dict
 
 class ServoPosition:
     def __init__(self, servo_id: int, position: int):
@@ -26,12 +26,12 @@ class ServoBus:
 # TODO: create a connection for the servo bus, handle connection and teardown gracefully
 
 
-    def get_bus_position(self, servo_bus: ServoBusCommunication) -> List[ServoPosition]:
+    def get_bus_position(self, servo_bus: ServoBusCommunication) -> Dict[int, ServoPosition]:
         """Return the list of the servo positions."""
-        positions = []
+        positions = {}
         for servo in self.servo_ids:
             servo_pos = servo_bus.pos_read(servo)
-            positions.append(ServoPosition(servo, servo_pos))
+            positions[servo] =ServoPosition(servo, servo_pos)
         return positions
     
 
