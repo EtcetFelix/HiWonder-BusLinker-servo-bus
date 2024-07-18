@@ -10,13 +10,16 @@ TIMEOUT = 1
 
 
 def test_pos_read():
+        """Test the pos is a valid position."""
         with ServoBusCommunication(port=PORT, baudrate=BAUDRATE, timeout=TIMEOUT, on_enter_power_on=True) as servo_bus:
-            angle_tick = servo_bus.pos_read(1)
+            angle_tick = servo_bus.pos_read(SERVO_ID)
             assert angle_tick is not None
+            assert isinstance(angle_tick, int)
             logger.info(f"tick: {angle_tick}")
 
 
 def test_get_vin():
+    """Test the vin command responds with a voltage higher than 0."""
     with ServoBusCommunication(port=PORT, baudrate=BAUDRATE, timeout=TIMEOUT, on_enter_power_on=True) as servo_bus:
         assert servo_bus.vin_read(SERVO_ID) > 0
         logger.info(f"Servo VIN: {servo_bus.vin_read(SERVO_ID)}")
