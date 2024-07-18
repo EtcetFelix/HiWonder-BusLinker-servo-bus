@@ -28,11 +28,10 @@ class ServoBus:
 
     def get_bus_position(self, servo_bus: ServoBusCommunication) -> List[ServoPosition]:
         """Return the list of the servo positions."""
-        # with ServoBusCommunication(port=self.port, on_enter_power_on=True) as servo_bus:
         positions = []
         for servo in self.servo_ids:
             servo_pos = servo_bus.pos_read(servo)
-            positions.append(servo_pos)
+            positions.append(ServoPosition(servo, servo_pos))
         return positions
     
 
