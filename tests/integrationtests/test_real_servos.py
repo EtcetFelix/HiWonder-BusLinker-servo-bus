@@ -2,7 +2,7 @@ from hiwonderbuslinker.lewansoul_servo_bus import ServoBusCommunication
 import time
 
 
-SERVO_ID = 1
+SERVO_ID = 2
 PORT = 'COM5'
 BAUDRATE = 115200
 TIMEOUT = 1
@@ -33,7 +33,7 @@ def reversed_byte(data):
     return bytes_obj
 
 def testing_pos(servo_bus: ServoBusCommunication):
-        angle_tick = servo_bus.pos_read(1)
+        angle_tick = servo_bus.pos_read(SERVO_ID)
         print(f"tick: {angle_tick}")
 
 
@@ -44,16 +44,16 @@ def get_pos_for_seconds(servo_bus, num_seconds: int):
         time.sleep(num_seconds/5)
 
 def test_move_servo_motor_for_seconds(servo_bus: ServoBusCommunication, num_seconds: int):
-    servo_bus.mode_write(1, 'motor', 20)
+    servo_bus.mode_write(SERVO_ID, 'motor', 20)
     get_pos_for_seconds(servo_bus, num_seconds)
-    servo_bus.mode_write(1, 'servo')
+    servo_bus.mode_write(SERVO_ID, 'servo')
 
 def test_complete_movement():
     with ServoBusCommunication(port=PORT, baudrate=BAUDRATE, timeout=TIMEOUT, on_enter_power_on=True) as servo_bus:
         # print(servo_bus.id_read(254))
-        print(servo_bus.vin_read(1))
-        print(servo_bus.pos_read(1))
-        print(servo_bus.mode_read(1))
+        print(servo_bus.vin_read(SERVO_ID))
+        print(servo_bus.pos_read(SERVO_ID))
+        print(servo_bus.mode_read(SERVO_ID))
         # while True:
         #     print(servo_bus.pos_read(1))
 
@@ -63,3 +63,9 @@ def test_complete_movement():
         for x in range(1):
             servo_bus.pos_set(servo_id=1, tick=150, time_s=.1, wait=False)
             print(f"command number {x+1} sent")
+
+
+if __name__ == '__main__':
+    with ServoBusCommunication(port=PORT, baudrate=BAUDRATE, timeout=TIMEOUT, on_enter_power_on=True) as servo_bus:
+        testing_pos(servo_bus)
+        servo_bus.id_write(1, 2)
