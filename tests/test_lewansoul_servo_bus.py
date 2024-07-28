@@ -61,7 +61,7 @@ class ServoBusTest(unittest.TestCase):
     def test_move_time_write(self):
         self.setup_servo_bus(b'')
 
-        self.servo_bus.move_time_write(123, 180, 2.5)
+        self.servo_bus.pos_set(123, 180, 2.5)
 
         self.assert_data_written(b'UU{\x07\x01\xee\x02\xc4\t\xbf')
 

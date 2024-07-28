@@ -69,7 +69,7 @@ def control(servo_bus: ServoBusCommunication):
             print('Error:', e)
             continue
 
-        servo_bus.move_time_write(servo_id, angle, time_s)
+        servo_bus.pos_set(servo_id, angle, time_s)
         # servo_bus.move_speed_write(servo_id, angle, time_s)
 
     servo_bus.set_powered(BROADCAST_ID, False)

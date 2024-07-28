@@ -1,6 +1,12 @@
-from src.python.lewansoul_servo_bus import ServoBusCommunication
-import struct
+from hiwonderbuslinker.lewansoul_servo_bus import ServoBusCommunication
 import time
+
+
+SERVO_ID = 2
+PORT = 'COM5'
+BAUDRATE = 115200
+TIMEOUT = 1
+
 
 def binary_format(data):
     binary_representation = " ".join(bin(byte)[2:].zfill(8) for byte in data)
@@ -27,8 +33,9 @@ def reversed_byte(data):
     return bytes_obj
 
 def testing_pos(servo_bus: ServoBusCommunication):
-        angle_tick = servo_bus.pos_read(1)
+        angle_tick = servo_bus.pos_read(SERVO_ID)
         print(f"tick: {angle_tick}")
+
 
 def get_pos_for_seconds(servo_bus, num_seconds: int):
     t_end = time.time() + num_seconds
@@ -37,26 +44,28 @@ def get_pos_for_seconds(servo_bus, num_seconds: int):
         time.sleep(num_seconds/5)
 
 def test_move_servo_motor_for_seconds(servo_bus: ServoBusCommunication, num_seconds: int):
-    servo_bus.mode_write(1, 'motor', 20)
+    servo_bus.mode_write(SERVO_ID, 'motor', 20)
     get_pos_for_seconds(servo_bus, num_seconds)
-    servo_bus.mode_write(1, 'servo')
+    servo_bus.mode_write(SERVO_ID, 'servo')
+
+def test_complete_movement():
+    with ServoBusCommunication(port=PORT, baudrate=BAUDRATE, timeout=TIMEOUT, on_enter_power_on=True) as servo_bus:
+        # print(servo_bus.id_read(254))
+        print(servo_bus.vin_read(SERVO_ID))
+        print(servo_bus.pos_read(SERVO_ID))
+        print(servo_bus.mode_read(SERVO_ID))
+        # while True:
+        #     print(servo_bus.pos_read(1))
+
+        test_move_servo_motor_for_seconds(servo_bus, .2)
+        time.sleep(0.1)
+        print("sending servo move commands...")
+        for x in range(1):
+            servo_bus.pos_set(servo_id=1, tick=150, time_s=.1, wait=False)
+            print(f"command number {x+1} sent")
 
 
-with ServoBusCommunication(port='COM5', baudrate=115200, timeout=1, on_enter_power_on=True) as servo_bus:
-    # print(servo_bus.id_read(254))
-    print(servo_bus.vin_read(1))
-    print(servo_bus.pos_read(1))
-    print(servo_bus.mode_read(1))
-    # while True:
-    #     print(servo_bus.pos_read(1))
-
-    test_move_servo_motor_for_seconds(servo_bus, .2)
-    time.sleep(0.1)
-    print("sending servo move commands...")
-    for x in range(1):
-        servo_bus.move_time_write(servo_id=1, tick=150, time_s=.1, wait=False)
-        print(f"command number {x+1} sent")
-    
-    
-    
-
+if __name__ == '__main__':
+    with ServoBusCommunication(port=PORT, baudrate=BAUDRATE, timeout=TIMEOUT, on_enter_power_on=True) as servo_bus:
+        testing_pos(servo_bus)
+        servo_bus.id_write(1, 2)

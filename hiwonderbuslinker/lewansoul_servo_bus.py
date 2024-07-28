@@ -93,7 +93,7 @@ class Servo:
         return f'{name} (ID {self.id})'
 
     def move_time_write(self, *args, **kwargs) -> None:
-        self.bus.move_time_write(self.id, *args, **kwargs)
+        self.bus.pos_set(self.id, *args, **kwargs)
 
     def move_time_wait_write(self, *args, **kwargs) -> None:
         self.bus.move_time_wait_write(self.id, *args, **kwargs)
@@ -414,28 +414,6 @@ class ServoBusCommunication:
         if wait:
             time.sleep(time_s)
 
-    # def move_time_write(self, servo_id: int, angle_degrees: Real, time_s: Real,
-    #                     wait: bool = False) -> None:
-    def move_time_write(self, servo_id: int, tick: int, time_s: Real,
-                        wait: bool = False) -> None:
-        """
-        Tells the servo to start moving to the specified angle within the
-        specified amount of time.
-
-        :param servo_id:
-        :param angle_degrees: Should be in the range [0, 240] degrees; will be
-            truncated if outside this range.
-        :param time_s: Should be in the range [0, 30] s; will be truncated if
-            outside this range.
-        :param wait: Whether or not to wait time_s seconds after sending the
-            command.
-        """
-
-        # return self._move_time_write(servo_id, angle_degrees, time_s,
-        #                              _SERVO_MOVE_TIME_WRITE, wait)
-        return self._move_time_write(servo_id, tick, time_s,
-                                      _SERVO_MOVE_TIME_WRITE, wait)
-
     def move_time_wait_write(self, servo_id: int, angle_degrees: Real,
                              time_s: Real) -> None:
         """
@@ -515,7 +493,7 @@ class ServoBusCommunication:
         error = abs(angle_degrees - current_angle)
         time_s = error / speed_dps
 
-        self.move_time_write(servo_id, angle_degrees, time_s, wait=wait)
+        self.pos_set(servo_id, angle_degrees, time_s, wait=wait)
 
     def velocity_read(
             self, *servo_ids: int, period_s: Real = 0.1
@@ -829,6 +807,30 @@ class ServoBusCommunication:
 
         return angle_tick
         # return _ticks_to_degrees(angle)
+
+    
+    # def move_time_write(self, servo_id: int, angle_degrees: Real, time_s: Real,
+    #                     wait: bool = False) -> None:
+    def pos_set(self, servo_id: int, tick: int, time_s: Real,
+                        wait: bool = False) -> None:
+        """
+        Tells the servo to start moving to the specified angle within the
+        specified amount of time.
+
+        :param servo_id:
+        :param angle_degrees: Should be in the range [0, 240] degrees; will be
+            truncated if outside this range.
+        :param time_s: Should be in the range [0, 30] s; will be truncated if
+            outside this range.
+        :param wait: Whether or not to wait time_s seconds after sending the
+            command.
+        """
+
+        # return self._move_time_write(servo_id, angle_degrees, time_s,
+        #                              _SERVO_MOVE_TIME_WRITE, wait)
+        return self._move_time_write(servo_id, tick, time_s,
+                                      _SERVO_MOVE_TIME_WRITE, wait)
+    
 
     def mode_write(self, servo_id: int, mode: Literal['motor', 'servo'],
                    speed: Real = None) -> None:
